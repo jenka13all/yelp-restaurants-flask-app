@@ -6,12 +6,14 @@ Created on Wed Jul 22 20:58:51 2020
 @author: jennifer
 """
 from flask import Flask, render_template, request, jsonify
+from flask_jsglue import JSGlue
 import secrets
 import models
 
 secret_key = secrets.token_hex(16)
 
 app = Flask(__name__, instance_relative_config=True)
+jsglue = JSGlue(app)
 app.config['SECRET_KEY'] = secret_key
 
 @app.route('/', methods=['GET', 'POST'])
