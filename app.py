@@ -108,6 +108,7 @@ def review(restaurant_id):
     reviews = restaurant_text_df[mask]
     
     filename = 'static/cloud_' + restaurant_id + '.png'
+    restaurant_name = reviews.iloc[0]['name']
 
     # Generate word cloud
     WordCloud(
@@ -120,7 +121,7 @@ def review(restaurant_id):
         stopwords = STOPWORDS
     ).generate(''.join(reviews['text'])).to_file(filename)
     
-    return render_template('wordmap.html', wordcloud=filename, restaurant_name=reviews['name'])
+    return render_template('wordmap.html', wordcloud=filename, restaurant_name=restaurant_name)
 
     
 
