@@ -120,7 +120,7 @@ def review(restaurant_id):
         stopwords = STOPWORDS
     ).generate(''.join(reviews['text'])).to_file(filename)
     
-    return render_template('wordmap.html', wordcloud=filename, restaurant_name=)
+    return render_template('wordmap.html', wordcloud=filename, restaurant_name=reviews['name'])
 
     
 
