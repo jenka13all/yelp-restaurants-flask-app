@@ -14,17 +14,17 @@ import models
 
 secret_key = secrets.token_hex(16)
 
-app = Flask(__name__, instance_relative_config=True)
-jsglue = JSGlue(app)
-app.config['SECRET_KEY'] = secret_key
+application = Flask(__name__, instance_relative_config=True)
+jsglue = JSGlue(application)
+application.config['SECRET_KEY'] = secret_key
 
-@app.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def index():
     form = models.Form()
     
     return render_template('index.html', form=form)
 
-@app.route('/city/<state>')
+@application.route('/city/<state>')
 def city(state):
     state_to_city = models.StateToCity()
     state_to_city_dict = state_to_city.state_city_dict
@@ -47,7 +47,7 @@ def city(state):
         
     return jsonify({'cities': cityArray})    
 
-@app.route('/cuisine/<city>/<state>')
+@application.route('/cuisine/<city>/<state>')
 def cuisine(city, state):
     restaurant_data = models.RestaurantData()
     restaurant_data_df = restaurant_data.restaurant_data    
@@ -77,7 +77,7 @@ def cuisine(city, state):
     
     return jsonify({'cuisines': cuisineArray})
 
-@app.route('/restaurant/<cuisine>/<city>/<state>')
+@application.route('/restaurant/<cuisine>/<city>/<state>')
 def restaurant(cuisine, city, state):
     restaurant_data = models.RestaurantData()
     restaurant_data_df = restaurant_data.restaurant_data   
@@ -99,7 +99,7 @@ def restaurant(cuisine, city, state):
     return jsonify({'restaurants': restaurantArray})   
         
 
-@app.route('/review/<restaurant_id>')
+@application.route('/review/<restaurant_id>')
 def review(restaurant_id):
     restaurant_text = models.RestaurantText();
     restaurant_text_df = restaurant_text.restaurant_text
@@ -126,4 +126,5 @@ def review(restaurant_id):
     
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    #application.run(debug=False)
+    application.run(host='0.0.0.0', port=8080, debug=False)
