@@ -7,6 +7,8 @@ Created on Wed Jul 22 20:58:51 2020
 """
 from flask import Flask, render_template, request, jsonify
 from flask_jsglue import JSGlue
+from wordcloud import WordCloud, STOPWORDS
+
 import secrets
 import models
 
@@ -105,7 +107,20 @@ def review(restaurant_id):
     mask = restaurant_text_df['business_id'] == restaurant_id
     reviews = restaurant_text_df[mask]
     
-    return render_template('wordmap.html', reviews=reviews)
+    filename = 'static/cloud_' + restaurant_id + '.png'
+
+    # Generate word cloud
+    WordCloud(
+        width = 500, 
+        height = 200, 
+        background_color='black', 
+        colormap='Set2',
+        random_state=1, 
+        collocations=False, 
+        stopwords = STOPWORDS
+    ).generate(''.join(reviews['text'])).to_file(filename)
+    
+    return render_template('wordmap.html', wordcloud=filename, restaurant_name=)
 
     
 
