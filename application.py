@@ -107,7 +107,7 @@ def review(restaurant_id):
     mask = restaurant_text_df['business_id'] == restaurant_id
     reviews = restaurant_text_df[mask]
     
-    filename = 'static/cloud_' + restaurant_id + '.png'
+    filename = 'static/images/cloud_' + restaurant_id + '.png'
     restaurant_name = reviews.iloc[0]['name']
 
     # Generate word cloud
