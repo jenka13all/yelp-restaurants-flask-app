@@ -126,5 +126,5 @@ def review(restaurant_id):
     
 
 if __name__ == '__main__':
-    #application.run(debug=False)
-    application.run(host='0.0.0.0', port=8080, debug=False)
+    application.run(debug=False)
+    #application.run(host='0.0.0.0', port=8080, debug=False)
