@@ -5,17 +5,21 @@ Created on Wed Jul 22 20:58:51 2020
 
 @author: jennifer
 """
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, jsonify, request
+from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 from wordcloud import WordCloud, STOPWORDS
 
 import secrets
 import models
+import os.path
 
 secret_key = secrets.token_hex(16)
 
 application = Flask(__name__, instance_relative_config=True)
 jsglue = JSGlue(application)
+bootstrap = Bootstrap(application)
+
 application.config['SECRET_KEY'] = secret_key
 
 @application.route('/', methods=['GET', 'POST'])
@@ -109,17 +113,18 @@ def review(restaurant_id):
     
     filename = 'static/images/cloud_' + restaurant_id + '.png'
     restaurant_name = reviews.iloc[0]['name']
-
-    # Generate word cloud
-    WordCloud(
-        width = 500, 
-        height = 200, 
-        background_color='black', 
-        colormap='Set2',
-        random_state=1, 
-        collocations=False, 
-        stopwords = STOPWORDS
-    ).generate(''.join(reviews['text'])).to_file(filename)
+    
+    if not os.path.isfile(filename):
+        # Generate word cloud
+        WordCloud(
+            width = 500, 
+            height = 200, 
+            background_color='black', 
+            colormap='Set2',
+            random_state=1, 
+            collocations=False, 
+            stopwords = STOPWORDS
+        ).generate(''.join(reviews['text'])).to_file(filename)
     
     return render_template('wordmap.html', wordcloud=filename, restaurant_name=restaurant_name)
 
