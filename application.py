@@ -5,14 +5,14 @@ Created on Wed Jul 22 20:58:51 2020
 
 @author: jennifer
 """
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
-from wordcloud import WordCloud, STOPWORDS
 
 import secrets
 import models
 import os.path
+import TopicModel
 
 secret_key = secrets.token_hex(16)
 
@@ -103,33 +103,34 @@ def restaurant(cuisine, city, state):
     return jsonify({'restaurants': restaurantArray})   
         
 
-@application.route('/review/<restaurant_id>')
-def review(restaurant_id):
+@application.route('/impressions/<restaurant_id>')
+def impressions(restaurant_id):
     restaurant_text = models.RestaurantText();
     restaurant_text_df = restaurant_text.restaurant_text
     
     mask = restaurant_text_df['business_id'] == restaurant_id
     reviews = restaurant_text_df[mask]
     
-    filename = 'static/images/cloud_' + restaurant_id + '.png'
+    filenames = [
+        'static/images/cloud_' + restaurant_id + '_0.png',
+        'static/images/cloud_' + restaurant_id + '_1.png',
+    ]
+    
     restaurant_name = reviews.iloc[0]['name']
     
-    if not os.path.isfile(filename):
-        # Generate word cloud
-        WordCloud(
-            width = 500, 
-            height = 200, 
-            background_color='black', 
-            colormap='Set2',
-            random_state=1, 
-            collocations=False, 
-            stopwords = STOPWORDS
-        ).generate(''.join(reviews['text'])).to_file(filename)
+    if (not os.path.isfile(filenames[0])) & (not os.path.isfile(filenames[1])):
+        topic_model = TopicModel.TopicModel()
+        lda_model = topic_model.make_lda_model(reviews, restaurant_id)
+        filenames = topic_model.make_wordclouds(restaurant_id, lda_model)
     
-    return render_template('wordmap.html', wordcloud=filename, restaurant_name=restaurant_name)
+    return render_template(
+        'impressions.html', 
+        wordcloud1=filenames[0], 
+        wordcloud2=filenames[1], 
+        restaurant_name=restaurant_name
+    )
 
     
-
 if __name__ == '__main__':
     application.run(debug=False)
     #application.run(host='0.0.0.0', port=8080, debug=False)
